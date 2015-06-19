@@ -18,6 +18,12 @@ import os
 import shlex
 import datetime
 
+import tglog
+
+LOGGER_NAME = "tglogger"
+LOG_FILE = "/home/danno/tgbot/tgbot.log"
+
+logger = tglog.config_logger(name = LOGGER_NAME, log_file = LOG_FILE, replace_stdout=True)
 current_user = {"username":"mastoBOT","first_name":"Ignacio","last_name":"Villaldama BOT"}
 current_user = DictObject.objectify(current_user) 
 

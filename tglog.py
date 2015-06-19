@@ -23,7 +23,7 @@ def config_logger(name=__name__, log_file=None, replace_stdout = False, logLevel
     if log_file is None:
         handler = logging.StreamHandler(sys.stdout)
     else:
-        handler = logging.handlers.TimedRotatingFileHandler(LOG_FILENAME, when="midnight", backupCount=3)
+        handler = logging.handlers.TimedRotatingFileHandler(log_file, when="midnight", backupCount=3)
     formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
