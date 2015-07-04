@@ -1,0 +1,45 @@
+[
+  {
+    "trigger_keys": [
+      "http://",
+      "https://"
+    ],
+    "users": [
+      "ecandelas",
+      "mrdanno",
+      "razpeitia",
+      "hacksxor"
+    ],
+    "responses": [
+      "Ahí vienen con sus links",
+      "Deja lo leo.",
+      "Ya llegó esa hora del día en que compartes sabiduría",
+      "Ya lo había visto."
+    ]
+  },
+  {
+    "trigger_keys": [
+      "oh, yeah",
+      "oh yeah"
+    ],
+    "users": [],
+    "responses": [
+      "HELL YEAH",
+      "Mega genial!! Wuu!!",
+      "WUUUUU! Vamos muchachos!!",
+      "OH YEAH, BABY!! HELL YEAH!!"
+    ]
+  },
+  {
+    "trigger_keys": [
+      "hacking"
+    ],
+    "users": [],
+    "responses": [
+      "Hoy tengo hambre de hacking!",
+      "Hacking time!",
+      "Vamos por más hacking!!",
+      "Hacking, hell yeah!"
+    ]
+  }
+]

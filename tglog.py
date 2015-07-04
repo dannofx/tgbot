@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from global_constants import *
+
 import logging
 import logging.handlers
 import argparse
@@ -17,9 +19,13 @@ class STLogger(object):
     def flush(self):
         pass
 
-def config_logger(name=__name__, log_file=None, replace_stdout = False, logLevel = logging.INFO):
+def config_logger(name=__name__, log_file=None, replace_stdout = False, logLevel = TG_LOG_LEVEL):
     logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+
+    if logLevel is None:
+        logLevel = TG_LOG_LEVEL
+    logger.setLevel(logLevel)
+    
     if log_file is None:
         handler = logging.StreamHandler(sys.stdout)
     else:
