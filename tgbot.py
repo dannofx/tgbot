@@ -4,6 +4,8 @@ from DictObject import DictObject
 from chatterbot import ChatBot
 from apscheduler.schedulers.background import BackgroundScheduler
 from global_constants import *
+from commands import commands
+from commands.command import MessageSender
 
 import random
 import argparse
@@ -13,6 +15,7 @@ import requests
 import tglog
 import time
 import os
+import re
 
 # Telegram http methods
 get_updates_method = "getUpdates"
@@ -29,6 +32,28 @@ scheduler = None
 chatbot = None
 chat_events = None
 message_triggers = None
+configuration = None
+
+# MessageSender to be used by the commands
+class TelegramSender(MessageSender):
+    def send_message(self, chat_id, message):
+        send_message(chat_id, message)       
+    
+    def get_privileges(self):
+        permissions = None
+        permissions_file = configuration.get('Privileges', 'permissions_file')
+        with open(permissions_file) as data_file: 
+            permissions = json.load(data_file)
+        return permissions
+    
+    def get_triggers(self):
+        global message_triggers
+        return message_triggers
+    
+    def update_message_triggers(self):
+       load_message_triggers() 
+    def get_configuration(self):
+        return configuration
 
 # Util methods
 def static_var(varname, value):
@@ -110,6 +135,17 @@ def config_file_path():
         file_path = os.path.join(current_directory,"tgbot.cfg")
     return file_path;
 
+def load_message_triggers():
+    global message_triggers
+    global configuration
+    triggers_file = configuration.get('Message triggers', 'file_path')
+    with open(triggers_file) as data_file:    
+        message_triggers = json.load(data_file)
+        message_triggers = DictObject.objectify(message_triggers)
+    logger.info("Loading message triggers...")
+
+
+
 #Initialization
 def main():
     global logger
@@ -117,19 +153,18 @@ def main():
     global chatbot
     global chat_events
     global message_triggers
-
+    global configuration
     parser = argparse.ArgumentParser(description="Telegram bot program")
     parser.add_argument("-l", "--log", help="File to write log", default=None, metavar="FILE")
     parser.add_argument("-v", "--verbose", help="Enable verbose mode", default=None) 
     parser.add_argument("-c", "--config_file", help="Set configuration file", type=argparse.FileType('r'))
     args = parser.parse_args()
 
-    
     #Logger configuration
     logging_level = None
     if args.verbose:
         logging_level = logging.INFO
-    logger = tglog.config_logger(name = LOGGER_NAME, log_file = args.log, replace_stdout=True)
+    logger = tglog.config_logger(name = LOGGER_NAME, log_file = args.log, replace_stdout=True, logLevel=logging_level)
 
     #Configuration file
     config_file = args.config_file
@@ -144,6 +179,7 @@ def main():
             logger.error("Please provide a configuration file via -c argument or setting up {var_name} environment variable.".format(var_name=CONFIG_ENV_VAR))
             return 1
         config.read(config_path)
+    configuration = config
     logger.info("Configuration file loaded sucessfully")
     
     # Load chat events
@@ -154,12 +190,7 @@ def main():
     logger.info("Loading chat events...")
     
     # Load message events
-    triggers_file = config.get('Message triggers', 'file_path')
-    with open(triggers_file) as data_file:    
-        message_triggers = json.load(data_file)
-        message_triggers = DictObject.objectify(message_triggers)
-    logger.info("Loading message triggers...")
-
+    load_message_triggers()
     #Chat bot configuration
     chatbot_db = config.get('Chatterbot', 'db_path')
     chatbot = ChatBot("Terminal",
@@ -169,7 +200,11 @@ def main():
                         database=chatbot_db, logging=True) 
     logger.info("Chatterbot initialized...")
 
-    #Message scheduler configuration
+    # Load message commands
+    sender = TelegramSender()
+    commands.load_commands(sender, logger)
+
+    # Message scheduler configuration
     scheduler = BackgroundScheduler()
     sdb_url = config.get('Message Scheduler', 'db_path')
     scheduler.add_jobstore('sqlalchemy', url=sdb_url)
@@ -216,8 +251,12 @@ def get_updates():
         params["limit"] = 100
 
     response = requests.post(url, params=params)
-    data = response.json()
     
+    try:
+        data = response.json()
+    except ValueError:
+        logger.error("Received data could not be parsed")
+        return
     if data["ok"]:
         results = data["result"]
         for result in results:
@@ -291,7 +330,19 @@ def process_command (message):
         return False
     if (bot is not None) and bot != bot_profile.username:
         return True #it's a command but not for this bot
-    send_message(message.chat.id, "Aún no proceso comandos, chavo.")
+    #Buscar en lista de comandos y llamar con argumentos
+    arguments = []
+    try:
+        if not argument is None:
+            reg = re.compile('(?:".*?"|[^ "])+')
+            arguments = reg.findall(argument)
+    except ValueError:
+        #Mostrar tutorial
+        send_message(message.chat.id, commands.command_help(command))
+        return True
+    feedback = commands.process_command(command, message.chat.id, message['from'].username, arguments)
+    if not feedback is None:
+        send_message(message.chat.id, feedback)
     return True
 
 def process_chat_message(message, message_text):
