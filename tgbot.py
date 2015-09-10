@@ -2,7 +2,6 @@
 
 from DictObject import DictObject
 from chatterbot import ChatBot
-from apscheduler.schedulers.background import BackgroundScheduler
 from global_constants import *
 from commands import commands
 from commands.command import MessageSender
@@ -28,7 +27,6 @@ CONFIG_ENV_VAR = "TGBOT_CONFIG"
 # Global variables
 bot_profile = None
 logger = None
-scheduler = None
 chatbot = None
 chat_events = None
 message_triggers = None
@@ -203,13 +201,7 @@ def main():
     # Load message commands
     sender = TelegramSender()
     commands.load_commands(sender, logger)
-
-    # Message scheduler configuration
-    scheduler = BackgroundScheduler()
-    sdb_url = config.get('Message Scheduler', 'db_path')
-    scheduler.add_jobstore('sqlalchemy', url=sdb_url)
-    scheduler.start()
-    
+   
     #Telegram listener
     create_url.url_format = config.get('Telegram','url_format')
     create_url.bot_token = config.get('Telegram', 'bot_token')
@@ -230,7 +222,6 @@ def main():
         pass
     
     #Finish
-    scheduler.shutdown()
     logger.info("Telegram bot terminated")
 
 # Telegram profile, receiver and sender functions
@@ -340,7 +331,8 @@ def process_command (message):
         #Mostrar tutorial
         send_message(message.chat.id, commands.command_help(command))
         return True
-    feedback = commands.process_command(command, message.chat.id, message['from'].username, arguments)
+    username = message['from'].username if hasattr(message['from'], 'username') else None
+    feedback = commands.process_command(command, message.chat.id, username, arguments)
     if not feedback is None:
         send_message(message.chat.id, feedback)
     return True
