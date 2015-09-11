@@ -50,50 +50,90 @@ class AdminCommand(Command):
         else:
             return self.help()
 
-    def add_admin(self, username):
-        if username is None:
+    def add_admin(self, usernames_str):
+        if usernames_str is None:
             return self.help()
-        for admin in self.privileges['admins']:
-            if admin == username:
-                return "@{username} is already an admin user.".format(username=username)
-        #self.privileges['admins'].append(username)
-        self.privileges.setdefault('admins', []).append(username)
-        self.save_privileges()
-        self.logger.info("AAAAAAA "+str(self.privileges))
-        return "@{username} has been added successfully!".format(username=username)
+    
+        usernames = self.get_comma_arguments(usernames_str)
+        message = ""
+        for username in usernames:
+            can_be_added = True
+            for admin in self.privileges['admins']:
+                if admin == username:
+                    can_be_added = False
+                    break
 
-    def remove_admin(self, username):
-        if username is None:
+            if can_be_added:
+                self.privileges['admins'].append(username)
+                message +=  "@{username} has been added successfully!\n".format(username=username)
+            else:
+                message +=  "@{username} is already an admin user.\n".format(username=username)
+
+        self.save_privileges()
+        return message
+
+    def remove_admin(self, usernames_str):
+        if usernames_str is None:
             return self.help()
-        for admin in self.privileges['admins']:
-            if admin == username:
+
+        usernames = self.get_comma_arguments(usernames_str)
+        message = ""
+        for username in usernames:
+            can_be_removed = False
+            for admin in self.privileges['admins']:
+                if admin == username:
+                    can_be_removed = True
+                    break
+            if can_be_removed:
                 self.privileges['admins'].remove(admin)
-                self.save_privileges()
-                return "@{username} has been removed successfully.".format(username=username)
-        return "@{username} is not in the admins list".format(username=username)
-
-
-    def add_privileged_user(self, username):
-        if username is None:
-            return self.help()
-        for puser in self.privileges['privileged_users']:
-            if puser == username:
-                return "@{username} is already an privileged user.".format(username=username)
-        self.privileges['privileged_users'].append(username)
-        #self.privileges.setdefault('privileged_users', []).append(username)
+                message += "@{username} has been removed successfully.\n".format(username=username)
+            else:
+                message += "@{username} is not in the admins list\n".format(username=username)
         self.save_privileges()
-        return "@{username} has been added successfully!".format(username=username)
+        return message
 
-    def remove_privileged_user(self, username):
-        if username is None:
+    def add_privileged_user(self, usernames_str):
+        if usernames_str is None:
             return self.help()
-        for privileged_user in self.privileges['privileged_users']:
-            if privileged_user == username:
-                self.privileges['privileged_users'].remove(privileged_user)
-                self.save_privileges()
-                return "@{username} has been removed successfully.".format(username=username)
-        return "@{username} is not in the privileged_users list".format(username=username)
-   
+    
+        usernames = self.get_comma_arguments(usernames_str)
+        message = ""
+        for username in usernames:
+            can_be_added = True
+            for admin in self.privileges['privileged_users']:
+                if admin == username:
+                    can_be_added = False
+                    break
+
+            if can_be_added:
+                self.privileges['privileged_users'].append(username)
+                message +=  "@{username} has been added successfully!\n".format(username=username)
+            else:
+                message +=  "@{username} is already an privileged user.\n".format(username=username)
+
+        self.save_privileges()
+        return message
+
+    def remove_privileged_user(self, usernames_str):
+        if usernames_str is None:
+            return self.help()
+
+        usernames = self.get_comma_arguments(usernames_str)
+        message = ""
+        for username in usernames:
+            can_be_removed = False
+            for admin in self.privileges['privileged_users']:
+                if admin == username:
+                    can_be_removed = True
+                    break
+            if can_be_removed:
+                self.privileges['privileged_users'].remove(admin)
+                message += "@{username} has been removed successfully.\n".format(username=username)
+            else:
+                message += "@{username} is not in the privileged users list\n".format(username=username)
+        self.save_privileges()
+        return message
+
     def list(self):
         message = "-Root user: \n\t@" + self.privileges['root'] + "\n"
         message = "".join((message, "-Admin users:\n"))
