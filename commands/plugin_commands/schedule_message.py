@@ -143,8 +143,8 @@ class ScheduleCommand(Command):
     user_reference = staticmethod(user_reference)
 
     def help(self):
-        return "This is the help for the command"
-
+        self.logger.info("Printing help for schedule message command.")
+        return self.get_file_help(__file__, "schedule_message.man")
     def name(self):
         return "schedule_message"
     

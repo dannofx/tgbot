@@ -1,7 +1,6 @@
 from commands.command import Command
 import json
 import shlex
-import csv
 import collections
 
 KEYS_NOT_FOUND = 0
@@ -65,7 +64,6 @@ class TriggerCommand(Command):
         if len(arguments) == 0:
             return self.help()
         new_keys = self.get_comma_arguments(arguments[0])
-        print ("KEYS "+str(new_keys))
         for trigger in self.triggers:
             for keyword in trigger["trigger_keys"]:
                 for new_key in new_keys:
@@ -175,7 +173,7 @@ class TriggerCommand(Command):
             trigger["users"].extend(users)
             trigger["users"] = list(set(trigger["users"]))
         self.save_triggers()
-        return "The responses were added to the indicated triggers"
+        return "The users were added to the indicated triggers"
 
     def remove_user(self, arguments):
         if len(arguments) < 1:
@@ -298,7 +296,7 @@ class TriggerCommand(Command):
 
     def help(self):
         self.logger.info("Printing help")
-        return "This is the help for the command"
+        return self.get_file_help(__file__, "trigger.man")
 
     def name(self):
         return "trigger"
@@ -306,9 +304,3 @@ class TriggerCommand(Command):
     def description(self):
         return "Manages trigger words in the bot"    
 
-    def get_comma_arguments(self, argument):
-        splitter = csv.reader(argument.split('\n'), delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL, skipinitialspace=True)
-        items = []
-        for item in splitter:
-            items.extend(item)
-        return item

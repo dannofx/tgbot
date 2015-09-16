@@ -1,6 +1,7 @@
 from commands.command import Command
 import json
 import collections
+import os
 
 class AdminCommand(Command):
 
@@ -150,7 +151,7 @@ class AdminCommand(Command):
 
     def help(self):
         self.logger.info("Printing help")
-        return "This is the help for the command"
+        return self.get_file_help(__file__, "admin.man")
 
     def name(self):
         return "admin"
