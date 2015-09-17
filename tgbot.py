@@ -260,6 +260,9 @@ def get_bot_profile():
     global bot_profile
     url = create_url(bot_info_method)
     response = requests.get(url)
+    if response.status_code>= 400:
+        logger.error('url: %s', url)
+        logger.error('response: %s - %s', response.status_code, response.text)
     data = response.json()
     if data["ok"]:
         bot_profile = DictObject.objectify(data["result"])
