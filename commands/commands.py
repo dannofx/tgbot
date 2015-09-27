@@ -46,10 +46,16 @@ def command_help(command_name):
         return command.help()
 
 def general_help(arguments = None):
-    
     prefix = None
     message = None
-    if (not arguments is None) and len(arguments)>0 and arguments[0] == 'l':
+    argument = None
+    if (not arguments is None) and len(arguments)>0:
+        argument = arguments[0]
+        if argument != 'l':
+            command = get_command(argument)
+            return command.help()
+
+    if argument == 'l':
         prefix = ""
         message = ""
     else:
