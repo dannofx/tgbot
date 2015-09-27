@@ -53,7 +53,8 @@ def general_help(arguments = None):
         argument = arguments[0]
         if argument != 'l':
             command = get_command(argument)
-            return command.help()
+            if not command is None:
+                return command.help()
 
     if argument == 'l':
         prefix = ""
