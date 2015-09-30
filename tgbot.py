@@ -205,9 +205,10 @@ def main():
     #Telegram listener
     create_url.url_format = config.get('Telegram','url_format')
     create_url.bot_token = config.get('Telegram', 'bot_token')
-    if create_url.bot_token == '':
+    if create_url.bot_token == 'TOKEN_BOT':
         logger.error("bot_token is missing, please add a token to tgbot.cgf")
         return 1
+    logger.info("Retrieved token "+create_url.bot_token)
     try:
         logger.info("Retrieving bot profile...")
         get_bot_profile() 
