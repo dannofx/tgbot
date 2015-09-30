@@ -38,11 +38,7 @@ class TelegramSender(MessageSender):
         send_message(chat_id, message)       
     
     def get_privileges(self):
-        permissions = None
-        permissions_file = configuration.get('Privileges', 'permissions_file')
-        with open(permissions_file) as data_file: 
-            permissions = json.load(data_file)
-        return permissions
+        return load_permissions()
     
     def get_triggers(self):
         global message_triggers
@@ -136,11 +132,35 @@ def config_file_path():
 def load_message_triggers():
     global message_triggers
     global configuration
-    triggers_file = configuration.get('Message triggers', 'file_path')
-    with open(triggers_file) as data_file:    
-        message_triggers = json.load(data_file)
-        message_triggers = DictObject.objectify(message_triggers)
     logger.info("Loading message triggers...")
+    triggers_file = configuration.get('Message triggers', 'file_path')
+    if os.path.isfile(triggers_file):
+        with open(triggers_file) as data_file:    
+            message_triggers = json.load(data_file)
+            message_triggers = DictObject.objectify(message_triggers)
+    else:
+        logger.info("Creating triggers file: " + triggers_file)
+        message_triggers = []
+        json.dump(message_triggers, open(triggers_file, 'w'))
+
+def load_permissions():
+    permissions = None
+    permissions_file = configuration.get('Privileges', 'permissions_file')
+    logger.info("Loading permissions...")
+    if os.path.isfile(permissions_file):
+        with open(permissions_file) as data_file:
+            permissions = json.load(data_file)
+            permissions = DictObject.objectify(permissions)
+    else:
+        logger.info("Creating permissions file: " + permissions_file)
+        permissions = {
+                        "root": "",
+                        "admins": [],
+                        "privileged_users": []
+                      }
+        json.dump(permissions, open(permissions_file, 'w'))
+    
+    return permissions
 
 
 
@@ -189,6 +209,8 @@ def main():
     
     # Load message events
     load_message_triggers()
+    # Load permissions
+    load_permissions()
     #Chat bot configuration
     chatbot_db = config.get('Chatterbot', 'db_path')
     chatbot = ChatBot("Terminal",
@@ -208,7 +230,7 @@ def main():
     if create_url.bot_token == 'TOKEN_BOT':
         logger.error("bot_token is missing, please add a token to tgbot.cgf")
         return 1
-    logger.info("Retrieved token "+create_url.bot_token)
+    logger.info("Bot token: " + create_url.bot_token)
     try:
         logger.info("Retrieving bot profile...")
         get_bot_profile() 
