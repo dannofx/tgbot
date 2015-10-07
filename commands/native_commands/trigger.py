@@ -120,8 +120,13 @@ class TriggerCommand(Command):
     def join_triggers(self, trigger_keys):
         if len(trigger_keys) < 2:
             return self.help()
-
         triggers_to_join = []
+        all_trigger_keys = []
+        for key in trigger_keys:
+            comma_keys = self.get_comma_arguments(key)
+            all_trigger_keys.extend(comma_keys)
+        trigger_keys = all_trigger_keys
+
         for trigger in self.triggers:
             if len(trigger_keys) == 0:
                 break

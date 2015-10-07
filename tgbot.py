@@ -240,9 +240,10 @@ def get_updates():
     if not get_updates.last_id is None:
         params["offset"] = get_updates.last_id
         params["limit"] = 100
-
-    response = requests.post(url, params=params)
-    
+    try:
+        response = requests.post(url, params=params)
+    except ConnectionError as e:
+        logger.error("Connection Error: " + str(e))
     try:
         data = response.json()
     except ValueError:
