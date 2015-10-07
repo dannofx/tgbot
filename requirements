@@ -7,7 +7,6 @@ oauthlib==0.7.2
 PbPython==0.1.9
 pudb==2015.3
 Pygments==2.0.2
-pytg==0.4.1
 python-dateutil==2.4.2
 python-Levenshtein==0.12.0
 pytz==2015.4
@@ -17,3 +16,4 @@ six==1.9.0
 SQLAlchemy==1.0.5
 tzlocal==1.1.3
 urwid==1.3.0
+beautifulsoup4
