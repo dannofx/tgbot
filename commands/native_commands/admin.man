@@ -9,11 +9,11 @@
 /admin remove_privileged_user users
 
 -Actions
-list - Show a list with the available root, admin and privileged users.
-add_admin - Add a user or list of users as admins (only admin and root users can use it).
-remove_admin - Remove a user or list of users from the admin list (only admin and root users can use it).
-add_privileged_user - Add a user or list of users as privileged users (only admin and root users can use it).
-remove_privileged_user - Remove a user or list of users fromthe privileged users list (only admin and root users can use it).
+list - Shows a list with the available root, admin and privileged users.
+add_admin - Adds a user or list of users as admins (only admin and root users can use it).
+remove_admin - Removes a user or list of users from the admin list (only admin and root users can use it).
+add_privileged_user - Adds a user or list of users as privileged users (only admin and root users can use it).
+remove_privileged_user - Removes a user or list of users fromthe privileged users list (only admin and root users can use it).
 
 -Parameters
 users - Username or list of usernames separated by commas whitout blank spaces  (e.g. user1,user2,user3).

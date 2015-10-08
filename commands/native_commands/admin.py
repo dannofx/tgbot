@@ -157,4 +157,4 @@ class AdminCommand(Command):
         return "admin"
     
     def description(self):
-        return "Manage user privilieges"     
+        return "Manages user privilieges"     
