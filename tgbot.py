@@ -265,8 +265,11 @@ def get_updates():
         params["limit"] = 100
     try:
         response = requests.post(url, params=params)
-    except ConnectionError as e:
-        logger.error("Connection Error: " + str(e))
+    except ConnectionError as ce:
+        logger.error("Connection Error: " + str(ce))
+        return
+    except Exception as e:
+        logger.error("Unexpected error: " +str(e))
     try:
         data = response.json()
     except ValueError:
