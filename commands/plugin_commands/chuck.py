@@ -16,18 +16,14 @@ class JokeCommand(Command):
         self.message_sender.send_message(chat_id, joke)
 
     def name(self):
-        return 'chuck_norris'
+        return 'chuck'
 
     def description(self):
-        return 'Cuenta un chiste aleatorio sobre Chuck Norris'
+        return 'Tells a random joke about Chuck Norris.'
 
     def process(self, chat_id, username, arguments):
         thread = Thread(target=self.tell_joke, args=(chat_id,))
         thread.start()
 
     def help(self):
-        help_list = [
-            self.description(),
-            "Uso /chuck_norris",
-        ]
-        return '\n'.join(help_list)
+        return self.get_file_help(__file__, "chuck.man")
