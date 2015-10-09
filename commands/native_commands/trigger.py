@@ -201,7 +201,7 @@ class TriggerCommand(Command):
                     final_users.remove(user)
                 trigger["users"] = final_users
         self.save_triggers()
-
+        return "The users were removed"
 
     def add_response(self, arguments):
         if len(arguments) < 2:

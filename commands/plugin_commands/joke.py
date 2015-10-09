@@ -25,7 +25,7 @@ class JokeCommand(Command):
         return 'chiste'
 
     def description(self):
-        return 'Cuenta un chiste aleatorio'
+        return 'Gets a joke in Spanish.'
 
     def process(self, chat_id, username, arguments):
         level = 3
@@ -40,4 +40,4 @@ class JokeCommand(Command):
         thread.start()
 
     def help(self):
-        return "Uso /chiste"
+        return self.get_file_help(__file__, "joke.man")

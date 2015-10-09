@@ -9,7 +9,7 @@ class FXCommand(Command):
     def __init__(self, logger, message_sender):
         super().__init__(logger, message_sender)
         self.configuration = self.message_sender.get_configuration()
-        self.ACCESS_KEY = self.configuration.get('FX', 'access_key')
+        #self.ACCESS_KEY = self.configuration.get('FX', 'access_key')
 
     def get_exchage_rate(self, amount, src_curr, dst_curr):
         FX = self.FX
@@ -19,7 +19,7 @@ class FXCommand(Command):
         try:
             amount = float(amount)
         except:
-            return "Monto no es un numero"
+            return "Invalid amount"
 
         should_update = False
         if FX:
@@ -52,10 +52,10 @@ class FXCommand(Command):
         return "%.02f %s = %.02f %s" % (amount, src_curr, new_amount, dst_curr)
 
     def name(self):
-        return 'FX'
+        return 'fx'
 
     def description(self):
-        return 'Convierte montos entre diferentes divisas'
+        return 'Currency converter.'
 
     def process(self, chat_id, username, arguments):
         if len(arguments) != 3:
@@ -65,7 +65,7 @@ class FXCommand(Command):
                 return self.get_exchage_rate(*arguments)
             except Exception as e:
                 self.logger.warning(str(e))
-                return "Algo salio mal, checa el log"
+                return "I can't process the operation right now :("
 
     def help(self):
-        return "Uso /FX Monto DivisaBase DivisaDestino"
+        return self.get_file_help(__file__, "fx.man")

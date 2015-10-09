@@ -1,0 +1,14 @@
+-Description
+Tells a joke in Spanish.
+
+-Synopsis
+/chiste
+/chiste rate
+
+-Parameters
+rate - Numeric value beetwen 1 and 5, the higher the value is the funnier the joke will be;). Any different value will be ignored.
+
+-Examples
+
+/chiste 
+/chiste 5
