@@ -270,6 +270,7 @@ def get_updates():
         return
     except Exception as e:
         logger.error("Unexpected error: " +str(e))
+        return
     try:
         data = response.json()
     except ValueError:
