@@ -356,7 +356,7 @@ def process_command (message):
     arguments = []
     try:
         if not argument is None:
-            reg = re.compile('(?:".*?"|[^ "])+')
+            reg = re.compile('(?:["“”].*?["“”]|[^ "“”])+')
             arguments = reg.findall(argument)
     except ValueError:
         #Mostrar tutorial

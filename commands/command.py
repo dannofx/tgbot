@@ -14,6 +14,7 @@ class Command:
     def description(self):
         raise NotImplementedError("Subclasses should implement this!")
     def get_comma_arguments(argument):
+            argument = argument.replace('”','"').replace('“','"')
             splitter = csv.reader(argument.split('\n'), delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL, skipinitialspace=True)
             items = []
             for item in splitter:
