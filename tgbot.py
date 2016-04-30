@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from DictObject import DictObject
 from chatterbot import ChatBot
@@ -126,7 +127,7 @@ def config_file_path():
         file_path = os.environ[CONFIG_ENV_VAR]
     else:
         current_directory = os.path.dirname(os.path.realpath(__file__))
-        file_path = os.path.join(current_directory,"tgbot.cfg")
+        file_path = os.path.join(current_directory, "config", "tgbot.cfg")
     return file_path;
 
 def load_message_triggers():
@@ -229,6 +230,7 @@ def main():
     create_url.bot_token = config.get('Telegram', 'bot_token')
     if create_url.bot_token == 'TOKEN_BOT':
         logger.error("bot_token is missing, please add a token to tgbot.cgf")
+        logger.error("Full config path: " + config_file_path())
         return 1
     logger.info("Bot token: " + create_url.bot_token)
     try:
