@@ -42,7 +42,7 @@ s = setup(name='tgbot',
                         'tgbot.data': ['programmedjobs.sqlite','chatterbot.db'],
                         'tgbot.commands.native_commands': ['*.man'],
                         'tgbot.commands.plugin_commands': ['*.man']},
-          install_requires=['DictObject'],
+          install_requires=['DictObject', 'chatterbot'],
           zip_safe=False
           )
 lib_path = s.command_obj['install'].install_lib
