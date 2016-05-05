@@ -1,0 +1,25 @@
+-Description:
+/admin is a command used for user management, it allows edit admin and privileged users or list them (the list also includes root user that is not editable using this command). An admin user can edit users or triggers, but it cannot edit/remove the root user. Any user can see the general user list. The privileged user can have access to perform certain actions but is not intended to edit privileges or triggers.
+
+-Synopsis
+/admin list
+/admin add_admin users
+/admin remove_admin users
+/admin add_privileged_user users
+/admin remove_privileged_user users
+
+-Actions
+list - Shows a list with the available root, admin and privileged users.
+add_admin - Adds a user or list of users as admins (only admin and root users can use it).
+remove_admin - Removes a user or list of users from the admin list (only admin and root users can use it).
+add_privileged_user - Adds a user or list of users as privileged users (only admin and root users can use it).
+remove_privileged_user - Removes a user or list of users from the privileged users list (only admin and root users can use it).
+
+-Parameters
+users - Username or list of usernames separated by commas without blank spaces  (e.g. user1,user2,user3).
+
+-Examples
+/admin add_admin user1
+/admin add_admin user1,user2,user3
+/admin remove_admin user1
+/admin remove_user user1,user2,user3

@@ -6,11 +6,15 @@ from shutil import copyfile
 import os
 import sys
 
+version = __import__('tgbot').__version__
+author = __import__('tgbot').__author__
+author_email = __import__('tgbot').__email__
+
 token_arg = '--token'
 token_value = None
 systemv_arg = '--with-systemv'
 systemv_install = False
-systemv_dir = 'etc/init.d'
+systemv_dir = '/etc/init.d'
 
 if token_arg in sys.argv:
     index = sys.argv.index(token_arg)
@@ -27,23 +31,29 @@ if systemv_arg in sys.argv:
         exit(0)
 
 s = setup(name='tgbot',
-          version='0.1',
+          version=version,
           description='Python Telegram bot',
-          author='Danno Heredia',
-          author_email='danno@mistercyb.org',
+          author=author,
+          author_email=author_email,
           url='https://github.com/dannofx/tgbot',
-          packages=['tgbot', 
+          packages=['tgbot',
+                    'tgbot.commands',
                     'tgbot.commands.native_commands',
                     'tgbot.commands.plugin_commands',
                     'tgbot.data', 
                     'tgbot.config'],
-          package_dir={'tgbot': '.'},
+          package_dir={'tgbot': 'tgbot'},
           package_data={'tgbot.config': ['tgbot.cfg'],
-                        'tgbot.data': ['programmedjobs.sqlite','chatterbot.db'],
+                        'tgbot.data': ['programmedjobs.sqlite',
+                                       'chatterbot.db',
+                                       'chat_events.json'],
                         'tgbot.commands.native_commands': ['*.man'],
                         'tgbot.commands.plugin_commands': ['*.man']},
-          install_requires=['DictObject', 'chatterbot'],
-          zip_safe=False
+          install_requires=['DictObject', 
+                            'chatterbot'],
+          license='BSD',
+          zip_safe=False,
+          keywords=['telegram', 'bot', 'tgbot']
           )
 lib_path = s.command_obj['install'].install_lib
 egg_name = s.command_obj['bdist_egg'].egg_output
@@ -73,7 +83,7 @@ with open(config_file, 'w') as configfile:
 print ('Configuration file was set up: ' + config_file)
 
 if systemv_install:
-    src = 'tgbot'
+    src = 'tgbot.srv'
     destiny = os.path.join(systemv_dir,'tgbot')
     copyfile(src, destiny)
 

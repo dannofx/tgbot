@@ -1,0 +1,28 @@
+-Description:
+Schedules a message to be sent in a specified time or date to the conversation where the command is called.
+
+-Synopsis
+
+/schedule_message add date message
+/schedule_message add relative time message
+/schedule_message time
+/schedule_message remove message_id
+
+-Actions
+add - Schedules a message in a specified date or relative time (using "relative" as argument"). Returns a confirmation with the message schedule id.
+time - Displays the host's time, that is the time taken in account to schedule messages.
+remove - Cancels a message related to the provided message_id.
+
+-Parameters
+message - A text message.
+time - Relative time using the format <days>d<hours>h<minutes>m<seconds>s
+message_id - Numeric value provided after a message creation.
+
+-Examples
+/schedule_message add 10:30 "A message"
+/schedule_message add "09/23/2015 10:30" "A message"
+/schedule_message add relative 2d3h4m30s "A message"
+/schedule_message add relative 20m "A message"
+/schedule_message add relative 20m10s "A message"
+/schedule_message time
+/schedule_message remove 00000
