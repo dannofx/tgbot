@@ -1,4 +1,4 @@
-from commands.command import Command
+from tgbot.commands.command import Command
 import json
 import collections
 import os

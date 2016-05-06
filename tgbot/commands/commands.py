@@ -1,10 +1,10 @@
 import importlib
 import json
 
-from commands.command import Command
-from commands.command import MessageSender
-from commands.native_commands import *
-from commands.plugin_commands import *
+from tgbot.commands.command import Command
+from tgbot.commands.command import MessageSender
+from tgbot.commands.native_commands import *
+from tgbot.commands.plugin_commands import *
 
 commands = None
 logger = None

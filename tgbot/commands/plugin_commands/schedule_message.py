@@ -1,4 +1,4 @@
-from commands.command import Command
+from tgbot.commands.command import Command
 from apscheduler.schedulers.background import BackgroundScheduler
 from dateutil import parser
 from datetime import timedelta

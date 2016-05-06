@@ -1,4 +1,4 @@
-from commands.command import Command
+from tgbot.commands.command import Command
 import requests
 from bs4 import BeautifulSoup
 from threading import Thread
