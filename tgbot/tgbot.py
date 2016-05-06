@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.append("/Users/danno/tgbot/tgbot")
+
 from DictObject import DictObject
 from chatterbot import ChatBot
-from global_constants import *
-from commands import commands
-from commands.command import MessageSender
+from tgbot.commands import commands
+from tgbot.commands.command import MessageSender
+from tgbot.global_constants import *
 
 import random
 import argparse
@@ -391,6 +394,3 @@ def process_message_trigger(message, message_text):
                 reply = customize_reply(message, reply)
                 send_message(message.chat.id, reply)
                 return
-
-if __name__ == '__main__':
-    main()

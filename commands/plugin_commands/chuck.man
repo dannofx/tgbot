@@ -1,5 +1,0 @@
--Description
-Tells a random joke about Chuck Norris'
-
--Synopsis
-/chuck
