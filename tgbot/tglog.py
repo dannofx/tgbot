@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from global_constants import *
+from tgbot.global_constants import *
 
 import logging
 import logging.handlers

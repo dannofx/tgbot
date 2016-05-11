@@ -9,13 +9,13 @@ from chatterbot import ChatBot
 from tgbot.commands import commands
 from tgbot.commands.command import MessageSender
 from tgbot.global_constants import *
+from tgbot import tglog
 
 import random
 import argparse
 import configparser
 import json
 import requests
-import tglog
 import time
 import os
 import re
