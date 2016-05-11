@@ -178,7 +178,8 @@ def main():
     global configuration
     parser = argparse.ArgumentParser(description="Telegram bot program")
     parser.add_argument("-l", "--log", help="File to write log", default=None, metavar="FILE")
-    parser.add_argument("-v", "--verbose", help="Enable verbose mode", default=None) 
+    parser.add_argument("-v", "--verbose", help="Enable verbose mode", action='store_true', default=None) 
+    parser.add_argument("-t", "--train", help="Train chat bot based on the english corpus", action='store_true', default=None) 
     parser.add_argument("-c", "--config_file", help="Set configuration file", type=argparse.FileType('r'))
     args = parser.parse_args()
 
@@ -218,10 +219,15 @@ def main():
     #Chat bot configuration
     chatbot_db = config.get('Chatterbot', 'db_path')
     chatbot = ChatBot("Terminal",
-                        storage_adapter="chatterbot.adapters.storage.JsonDatabaseAdapter",
-                        logic_adapter="chatterbot.adapters.logic.EngramAdapter",
-                        io_adapter="chatterbot.adapters.io.TerminalAdapter",
-                        database=chatbot_db, logging=True) 
+                        storage_adapter = "chatterbot.adapters.storage.JsonDatabaseAdapter",
+                        logic_adapters = ["chatterbot.adapters.logic.EvaluateMathematically",
+                                         "chatterbot.adapters.logic.TimeLogicAdapter",
+                                         "chatterbot.adapters.logic.ClosestMatchAdapter"],
+                        io_adapters = ["chatterbot.adapters.io.TerminalAdapter"],
+                        database=chatbot_db, logging=True)
+    if args.train:
+        logger.info("Bot is being trained...")
+        chatbot.train("chatterbot.corpus.english")
     logger.info("Chatterbot initialized...")
 
     # Load message commands
