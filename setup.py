@@ -16,7 +16,7 @@ token_arg = '--authorization-token'
 token_value = None
 systemv_arg = '--with-systemv'
 systemv_install = False
-systemv_dir = 'etc/init.d'
+systemv_dir = '/etc/init.d'
 configure_arg = 'just-configure'
 
 if token_arg in sys.argv:
