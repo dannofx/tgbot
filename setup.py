@@ -10,7 +10,7 @@ version = __import__('tgbot').__version__
 author = __import__('tgbot').__author__
 author_email = __import__('tgbot').__email__
 
-token_arg = '--token'
+token_arg = '--authorization-token'
 token_value = None
 systemv_arg = '--with-systemv'
 systemv_install = False

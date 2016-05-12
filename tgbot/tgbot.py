@@ -178,9 +178,12 @@ def main():
     global configuration
     parser = argparse.ArgumentParser(description="Telegram bot program")
     parser.add_argument("-l", "--log", help="File to write log", default=None, metavar="FILE")
+    parser.add_argument("-a", "--authorization-token",  metavar="AUTHORIZATION_TOKEN", 
+                        help="Set new Telegram authorization token", default=None) 
     parser.add_argument("-v", "--verbose", help="Enable verbose mode", action='store_true', default=None) 
     parser.add_argument("-t", "--train", help="Train chat bot based on the english corpus", action='store_true', default=None) 
-    parser.add_argument("-c", "--config_file", help="Set configuration file", type=argparse.FileType('r'))
+    parser.add_argument("-c", "--config-file",  metavar="CONFIG_FILE", 
+                        help="Set configuration file", type=argparse.FileType('r'))
     args = parser.parse_args()
 
     #Logger configuration
@@ -216,7 +219,7 @@ def main():
     load_message_triggers()
     # Load permissions
     load_permissions()
-    #Chat bot configuration
+    # Chat bot configuration
     chatbot_db = config.get('Chatterbot', 'db_path')
     chatbot = ChatBot("Terminal",
                         storage_adapter = "chatterbot.adapters.storage.JsonDatabaseAdapter",
@@ -233,8 +236,16 @@ def main():
     # Load message commands
     sender = TelegramSender()
     commands.load_commands(sender, logger)
+
+    # Set new token if necessary
+    if args.authorization_token:
+        config.set('Telegram', 'bot_token', args.authorization_token)
+        with open(config_path, 'w') as configfile:
+            config.write(configfile)
+        logger.info('New authorization token saved.')
+
    
-    #Telegram listener
+    # Telegram listener
     create_url.url_format = config.get('Telegram','url_format')
     create_url.bot_token = config.get('Telegram', 'bot_token')
     if create_url.bot_token == 'TOKEN_BOT':
