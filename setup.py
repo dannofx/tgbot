@@ -4,6 +4,7 @@ from setuptools import setup
 import configparser
 from shutil import copyfile
 import os
+import stat
 import sys
 
 version = __import__('tgbot').__version__
@@ -75,6 +76,15 @@ def install_module():
     return installation_path
 
 def install_systemv():
+    # Launch script
+    launch_script = 'tgbot_run.sh'
+    destiny = os.path.join(installation_path,launch_script)
+    copyfile(launch_script, destiny)
+    st = os.stat(destiny)
+    os.chmod(destiny, st.st_mode | stat.S_IEXEC)
+    launch_script = destiny
+
+    #Service script
     src = 'tgbot.srv'
     destiny = os.path.join(systemv_dir,'tgbot')
     copyfile(src, destiny)
@@ -83,7 +93,7 @@ def install_systemv():
     filedata = fdes.read()
     fdes.close()
 
-    data = filedata.replace('TGBOT_DIR', installation_path)
+    data = filedata.replace('TGBOT_LAUNCH', launch_script)
 
     fdes = open(destiny,'w')
     fdes.write(data)
