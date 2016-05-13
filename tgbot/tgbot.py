@@ -3,6 +3,7 @@
 
 from DictObject import DictObject
 from chatterbot import ChatBot
+from textblob.exceptions import MissingCorpusError
 from tgbot.commands import commands
 from tgbot.commands.command import MessageSender
 from tgbot.global_constants import *
@@ -16,6 +17,7 @@ import requests
 import time
 import os
 import re
+import textblob.download_corpora
 
 # Telegram http methods
 get_updates_method = "getUpdates"
@@ -218,13 +220,13 @@ def main():
     load_permissions()
     # Chat bot configuration
     chatbot_db = config.get('Chatterbot', 'db_path')
-    chatbot = ChatBot("Terminal",
-                        storage_adapter = "chatterbot.adapters.storage.JsonDatabaseAdapter",
-                        logic_adapters = ["chatterbot.adapters.logic.EvaluateMathematically",
-                                         "chatterbot.adapters.logic.TimeLogicAdapter",
-                                         "chatterbot.adapters.logic.ClosestMatchAdapter"],
-                        io_adapters = ["chatterbot.adapters.io.TerminalAdapter"],
-                        database=chatbot_db, logging=True)
+    try:
+        chatbot = init_chatbot(chatbot_db)
+    except MissingCorpusError:
+        logger.warning("Corpora needs to be downloaded in order to use Chatterbot... downloading")
+        textblob.download_corpora.download_all()
+        chatbot = init_chatbot(chatbot_db)
+
     if args.train:
         logger.info("Bot is being trained...")
         chatbot.train("chatterbot.corpus.english")
@@ -265,6 +267,15 @@ def main():
     
     #Finish
     logger.info("Telegram bot terminated")
+
+def init_chatbot(chatbot_db):
+    return ChatBot("Terminal",
+                storage_adapter = "chatterbot.adapters.storage.JsonDatabaseAdapter",
+                logic_adapters = ["chatterbot.adapters.logic.EvaluateMathematically",
+                                 "chatterbot.adapters.logic.TimeLogicAdapter",
+                                 "chatterbot.adapters.logic.ClosestMatchAdapter"],
+                io_adapters = ["chatterbot.adapters.io.TerminalAdapter"],
+                database=chatbot_db, logging=True)
 
 # Telegram profile, receiver and sender functions
 @static_var("last_id", None)
