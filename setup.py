@@ -104,6 +104,10 @@ def install_systemv():
     fdes = open(destiny,'w')
     fdes.write(data)
     fdes.close()
+
+    st = os.stat(destiny)
+    os.chmod(destiny, st.st_mode | stat.S_IEXEC)
+
     print ("System V init script was installed.")
 
 def setup_configfile(installation_path):
