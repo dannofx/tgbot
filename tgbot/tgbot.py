@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.append("/Users/danno/tgbot/tgbot")
-
 from DictObject import DictObject
 from chatterbot import ChatBot
 from tgbot.commands import commands
