@@ -77,12 +77,18 @@ def install_module():
 
 def install_systemv():
     # Launch script
-    launch_script = 'tgbot_run.sh'
-    destiny = os.path.join(installation_path,launch_script)
-    copyfile(launch_script, destiny)
-    st = os.stat(destiny)
-    os.chmod(destiny, st.st_mode | stat.S_IEXEC)
-    launch_script = destiny
+    launch_script = None
+    if just_configure:
+        container = os.path.dirname(os.path.realpath(__file__))
+        launch_script = 'tgbot_run.py'
+        launch_script = os.path.join(container,launch_script)
+    else:
+        launch_script = 'tgbot_run.sh'
+        destiny = os.path.join(installation_path,launch_script)
+        copyfile(launch_script, destiny)
+        launch_script = destiny
+    st = os.stat(launch_script)
+    os.chmod(launch_script, st.st_mode | stat.S_IEXEC)
 
     #Service script
     src = 'tgbot.srv'
