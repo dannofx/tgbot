@@ -8,7 +8,7 @@ tgbot needs Python 3.4 or newer to work and it has been tested on OS X 10.9+ and
 
 First of all you need to create a Telegram bot and get a token, if you don't know how to do it, the process is explained [here](https://core.telegram.org/bots#6-botfather).
 
-If you want your bot be able to interact with groups don't forget configure privacy settings for your bot in the @BotFather's conversation (commands `/setjoingroups` and `/setprivacy`).
+If you want your bot be able to interact with groups don't forget configure privacy settings for your bot in the [@BotFather](https://telegram.me/BotFather)'s conversation (commands `/setjoingroups` and `/setprivacy`).
 
 Download tgbot:
 ```
@@ -35,14 +35,16 @@ Next, open a conversation with @BotFather and send him the following command:
 Select your bot and paste the command list obtained previously.
 ### Other installation options
 
-** Running just the local copy **
+**Running just the local copy**
+
 If you just want to run tgbot but not install it as a module, you can just run the following command:
 ```
 sudo python3 tgbot_run.py --authorization-token YOUR_TOKEN
 ```
 The `authorization-token` flag is just necessary the first time, it will be saved in the configuration file.
 
-** Edit configuration manually **
+**Edit configuration manually**
+
 tgbot can be configured manually editing the file `tgbot/config/tgbot.cfg`, here you can configure the Telegram token or establish absolute paths for other data files. This file initially should have the following content:
 ```
 [Message Scheduler]
@@ -65,13 +67,15 @@ file_path = tgbot/data/message_triggers.json
 permissions_file = tgbot/data/permissions.json
 ```
 
-** Installing just dependencies and configuring local routes **
+**Installing just dependencies and configuring local routes**
+
 To just install dependencies and establish absolute paths in the configuration file without install tgbot as a module run the following command:
 ```
 sudo python3 setup.py just-configure --authorization-token YOUR_TOKEN
 ```
 
-** Install System V init script (Debian based systems) **
+**Install System V init script (Debian based systems)**
+
 If your system supports System V scripts, you can install the boot script passing `with-systemv` parameter to `seup.py` during installation:
 ```
 sudo python3 setup.py install --with-systemv --authorization-token YOUR_TOKEN
@@ -93,17 +97,18 @@ tgbot can be executed with the following parameters:
 - `-c FILE` or `--config-file FILE` specifies the path to a different configuration file.
 - `-t` or `--train` Explained in the next section.
 
-** Train the chat bot**
+**Train the chat bot**
+
 After installation [ChatterBot](https://github.com/gunthercox/ChatterBot) instance (inside tgbot) starts off without any language knowledge, as it receives input its knowledge will increment, but if you want to accelerate the process, use the parameter `--train` or `-r` as following:
 ```
 sudo python3 -m tgbot --train
 ```
 ## Other features
 [Pending section]
-[comment]: <> (Triggers, admin and other functions)
+<!-- Triggers, admin and other functions) -->
 ## Custom commands Integration
 [Pending section]
-[comment]: <> (Explanation of custom commands)
+<!-- Explanation of custom commands -->
 
 ## What's next?
 
