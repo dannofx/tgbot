@@ -83,7 +83,7 @@ sudo python3 setup.py install --with-systemv --authorization-token YOUR_TOKEN
 
 To complete the installation, enter:
 ```
-$sudo update-rc.d tgbot defaults 90 10
+sudo update-rc.d tgbot defaults 90 10
 ```
 And now tgbot will run automatically at boot.
 
@@ -104,14 +104,119 @@ After installation [ChatterBot](https://github.com/gunthercox/ChatterBot) instan
 sudo python3 -m tgbot --train
 ```
 ## Other features
-[Pending section]
-<!-- Triggers, admin and other functions) -->
-## Custom commands Integration
-[Pending section]
-<!-- Explanation of custom commands -->
 
+
+**Group chat events**
+
+The bot can react to different group chat events with automated responses, this responses can be modified in the file `tgbot/data/chat_events.json`. In order your bot can access to these events, the privacy settings must be configurated as previously indicated.
+
+**Triggers**
+
+The bot can detect specific key phrases (triggers) in the conversation and react with costumized responses, these responses can be added, edited and deleted using `/trigger` command (needs permissions) or manually in the file `tgbot/data/message_triggers.json`.
+
+**Permissions**
+
+Some actions like triggers edition need permissions to be performed, you can add admins and privileged users using the command `/admin`, but first you need to set a root user in the file `tgbot/data/permissions.json` (this file is generated after the first run). This is an example of how this should look this file with a root user with user name "daniel_root"
+
+```json
+{
+  "privileged_users": [],
+  "admins": [],
+  "root": "daniel_root"
+}
+```
+
+**Default commands**
+
+This is a list of the default commands in tgbot:
+
+- `/help` - Print the list of available commands (use l as agument to print just the list).
+- `/fx` - Currency converter.
+- `/trigger` - Manages trigger words in the bot.
+- `/chiste` - Gets a joke in Spanish.
+- `/schedule_message` - Schedule a message to be sent in a specified date.
+- `/admin` - Manages user privileges
+- `/chuck` - Tells a random joke about Chuck Norris.
+
+## Custom commands integration
+
+You can create your own commands and add them to your bot instance, to do this create a python file in the directory `tgbot/commands/plugin_commands/`, in this file you will need to create a class inherits from `Command` class. The file `chuck.py` that contains the command `/chuck` is shown below as an example:
+
+```python
+from tgbot.commands.command import Command
+import requests
+import html
+
+from threading import Thread
+
+
+class JokeCommand(Command):
+    def __init__(self, logger, message_sender):
+        """Constructor.
+
+        Args:
+            logger: Object used to generate logs
+            messag_sender: object used to send messages to an specified chat_id
+        """
+        super().__init__(logger, message_sender)
+
+    def tell_joke(self, chat_id):
+        """ Download and parse a Chuck Norris joke, this method is NOT inherited
+            from command, is just used for this specific command.
+
+        Args:
+            chat_id: Chat identifier of conversation where this command was
+                     was invoked, it's necessary to send a response.
+        """
+        url = 'http://api.icndb.com/jokes/random'
+        self.logger.info("Downloading joke...")
+        r = requests.get(url)
+        joke = html.unescape(r.json()['value']['joke'])
+        self.message_sender.send_message(chat_id, joke)
+
+    def name(self):
+        """ Command's name.
+
+        Returns:
+            The name for this command.
+        """       
+        return 'chuck'
+
+    def description(self):
+        """ Command's description.
+
+        Returns:
+            The short description for this command.
+        """   
+        return 'Tells a random joke about Chuck Norris.'
+
+    def process(self, chat_id, username, arguments):
+        """ This method is called when the command is invoked.
+
+        Args:
+            chat_id: Chat identifier of conversation where this command was
+                     was invoked.
+            username: User name (or nick) of the user that invoked the command, if
+                      the user doesn't have user name it should contain the
+                      registered name.
+            arguments: Arguments for the command, if any.
+        """
+        thread = Thread(target=self.tell_joke, args=(chat_id,))
+        thread.start()
+
+    def help(self):
+        """ Help text for the command.
+
+        Returns:
+            A string with the help related to this command.
+        """  
+        return self.get_file_help(__file__, "chuck.man")
+
+```
+
+After adding your command you will need to restart tgbot.
 ## What's next?
 
-Integration of [**custom keyboards**](https://core.telegram.org/bots#keyboards), [**inline-mode**](https://core.telegram.org/bots#inline-mode) and **file sending**.
+I'm planning to integrate [**custom keyboards**](https://core.telegram.org/bots#keyboards), [**inline-mode**](https://core.telegram.org/bots#inline-mode) and **file sending**.
 
 Contributions are welcome.
