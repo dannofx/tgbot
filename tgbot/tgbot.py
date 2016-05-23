@@ -309,7 +309,12 @@ def get_updates():
     if data["ok"]:
         results = data["result"]
         for result in results:
-            message = result["message"]
+            if "message" in result:
+                message = result["message"]
+            elif "edited_message" in result:
+                continue
+            else:
+                continue            
             get_updates.last_id = result["update_id"]+1
             if message["date"] >= get_updates.start:
                 process_received_message(message)
