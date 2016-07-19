@@ -405,7 +405,7 @@ def process_command (message):
     return True
 
 def process_chat_message(message, message_text):
-    reply = chatbot.get_response(message_text)
+    reply = chatbot.get_response(message_text).text
     reply = customize_reply(message, reply) 
     send_message(message.chat.id,reply)
 
