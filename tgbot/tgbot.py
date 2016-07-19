@@ -271,7 +271,7 @@ def main():
 def init_chatbot(chatbot_db):
     return ChatBot("Terminal",
                 storage_adapter = "chatterbot.adapters.storage.JsonDatabaseAdapter",
-                logic_adapters = ["chatterbot.adapters.logic.EvaluateMathematically",
+                logic_adapters = ["chatterbot.adapters.logic.MathematicalEvaluation",
                                  "chatterbot.adapters.logic.TimeLogicAdapter",
                                  "chatterbot.adapters.logic.ClosestMatchAdapter"],
                 io_adapters = ["chatterbot.adapters.io.TerminalAdapter"],

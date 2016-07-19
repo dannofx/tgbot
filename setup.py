@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from setuptools import setup
 import configparser
@@ -59,10 +59,11 @@ def install_module():
                             'tgbot.commands.native_commands': ['*.man'],
                             'tgbot.commands.plugin_commands': ['*.man']},
               install_requires=['DictObject', 
-                                'chatterbot',
+                                'chatterbot<=0.4.4',
                                 'apscheduler',
                                 'python-dateutil',
-                                'SQLAlchemy'],
+                                'SQLAlchemy',
+                                'bs4'],
               license='BSD',
               zip_safe=False,
               keywords=['telegram', 'bot', 'tgbot']
