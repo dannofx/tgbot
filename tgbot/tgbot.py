@@ -3,6 +3,7 @@
 
 from DictObject import DictObject
 from chatterbot import ChatBot
+from chatterbot.training.trainers import ChatterBotCorpusTrainer
 from textblob.exceptions import MissingCorpusError
 from tgbot.commands import commands
 from tgbot.commands.command import MessageSender
@@ -229,6 +230,7 @@ def main():
 
     if args.train:
         logger.info("Bot is being trained...")
+        chatbot.set_trainer(ChatterBotCorpusTrainer)
         chatbot.train("chatterbot.corpus.english")
     logger.info("Chatterbot initialized...")
 
@@ -332,10 +334,10 @@ def get_bot_profile():
 
 def send_message(chat_id, text):
     url = create_url(send_message_method)   
-    limit = 600
-    for i in range(0, len(text), limit):
-        params = {'chat_id':chat_id, 'text':text[i:i+limit]}
-        response = requests.post(url, params=params)
+    #limit = 600
+    #for i in range(0, len(text), limit):
+    params = {'chat_id':chat_id, 'text':text}
+    response = requests.post(url, params=params)
 
 def process_received_message(message):
     logger.info(message)
