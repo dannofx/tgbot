@@ -23,6 +23,7 @@ import textblob.download_corpora
 # Telegram http methods
 get_updates_method = "getUpdates"
 send_message_method = "sendMessage"
+send_location_method = "sendLocation"
 bot_info_method = "getMe"
 
 # Constants
@@ -35,12 +36,18 @@ chatbot = None
 chat_events = None
 message_triggers = None
 configuration = None
+pending_hide_keyboard = False
 
 # MessageSender to be used by the commands
 class TelegramSender(MessageSender):
-    def send_message(self, chat_id, message):
-        send_message(chat_id, message)       
-    
+    def send_message(self, chat_id, message, enable_preview=True, force_hide = False):
+        send_message(chat_id, message, enable_preview, force_hide)    
+    def send_location(self, chat_id, latitude, longitude):
+        send_location(chat_id, latitude, longitude)
+    def send_options(self, chat_id, options, text = 'Select an option:'):
+        send_options(chat_id, options, text)
+    def request_location(self, chat_id, text='Provide location'):
+        request_location(chat_id, text)
     def get_privileges(self):
         return load_permissions()
     
@@ -208,6 +215,14 @@ def main():
     configuration = config
     logger.info("Configuration file loaded sucessfully")
     
+    # Get Telegram API properties
+    create_url.url_format = config.get('Telegram','url_format')
+    create_url.bot_token = config.get('Telegram', 'bot_token')
+    if create_url.bot_token == 'TOKEN_BOT':
+        logger.error("bot_token is missing, please add a token to tgbot.cgf")
+        logger.error("Full config path: " + config_file_path())
+        return 1
+    
     # Load chat events
     events_file = config.get('Chat events', 'file_path')
     with open(events_file) as data_file:    
@@ -234,26 +249,19 @@ def main():
         chatbot.train("chatterbot.corpus.english")
     logger.info("Chatterbot initialized...")
 
-    # Load message commands
-    sender = TelegramSender()
-    commands.load_commands(sender, logger)
-
     # Set new token if necessary
     if args.authorization_token:
         config.set('Telegram', 'bot_token', args.authorization_token)
         with open(config_path, 'w') as configfile:
             config.write(configfile)
         logger.info('New authorization token saved.')
-
-   
-    # Telegram listener
-    create_url.url_format = config.get('Telegram','url_format')
-    create_url.bot_token = config.get('Telegram', 'bot_token')
-    if create_url.bot_token == 'TOKEN_BOT':
-        logger.error("bot_token is missing, please add a token to tgbot.cgf")
-        logger.error("Full config path: " + config_file_path())
-        return 1
     logger.info("Bot token: " + create_url.bot_token)
+
+    # Load message commands
+    sender = TelegramSender()
+    commands.load_commands(sender, logger)
+
+    # Telegram listener
     try:
         logger.info("Retrieving bot profile...")
         get_bot_profile() 
@@ -261,14 +269,17 @@ def main():
         while True:
             get_updates()
     except GeneratorExit:
-        pass
+        clean_program()
     except KeyboardInterrupt:
-        pass
+        clean_program()
     else:
-        pass
+        clean_program()
     
     #Finish
     logger.info("Telegram bot terminated")
+
+def clean_program():
+    commands.stop_commands()
 
 def init_chatbot(chatbot_db):
     return ChatBot("Terminal",
@@ -332,27 +343,102 @@ def get_bot_profile():
     if data["ok"]:
         bot_profile = DictObject.objectify(data["result"])
 
-def send_message(chat_id, text):
+def send_message(chat_id, text, enable_preview = True, force_hide = False):
+    global pending_hide_keyboard
     url = create_url(send_message_method)   
-    #limit = 600
-    #for i in range(0, len(text), limit):
     params = {'chat_id':chat_id, 'text':text}
-    response = requests.post(url, params=params)
+    params['disable_web_page_preview'] = not enable_preview
+    if pending_hide_keyboard or force_hide:
+        params['reply_markup'] = {'hide_keyboard':True}
+        pending_hide_keyboard = False
+    response = requests.post(url, data=json.dumps(params), headers={'Content-Type': 'application/json'})
+    logger.info("Telegram response: "+ str(response.json()))
+
+def send_location(chat_id, latitude, longitude):
+    global pending_hide_keyboard
+    url = create_url(send_location_method)
+    params = {'chat_id':chat_id, 'latitude':latitude, 'longitude':longitude}
+    if pending_hide_keyboard:
+        params['reply_markup'] = {'hide_keyboard':True}
+        pending_hide_keyboard = False
+    response = requests.post(url, data=json.dumps(params), headers={'Content-Type': 'application/json'})
+    logger.info("Telegram response: "+ str(response.json()))
+
+def send_options(chat_id, options, text = 'Select and option'):
+
+    if len(options) == 0:
+        logger.error('Empty array found in options!')
+        return
+    options_json = []
+    for list_x in options:
+        if len(list_x) == 0:
+            logger.error('Empty array found in options!')
+            return
+        list_json_x = []
+        for element in list_x:
+            opt_json = {
+                            'text': element
+                       }
+            list_json_x.append(opt_json)
+        options_json.append(list_json_x)
+
+    url = create_url(send_message_method)
+    reply_markup = {
+                        'keyboard':options_json,
+                        'one_time_keyboard': True
+                    }
+    data = {
+                'chat_id':chat_id, 
+                'text': text,
+                'reply_markup': reply_markup
+            }
+    response = requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json'})
+    logger.info("Telegram response: "+ str(response.json()))
+
+def request_location(chat_id, text='Provide location'):
+    url = create_url(send_message_method)
+    reply_markup = {
+                        'keyboard':[[{'text':'Get location','request_location': True}]],
+                        'one_time_keyboard': True
+                    }
+    data = {
+                'chat_id':chat_id, 
+                'text': text,
+                'reply_markup': reply_markup
+            }
+    response = requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json'})
+    logger.info("Telegram response: "+ str(response.json()))
 
 def process_received_message(message):
+    global pending_hide_keyboard
     logger.info(message)
     message = DictObject.objectify(message)
+    username = message['from'].username if hasattr(message['from'], 'username') else None
 
-    processed_event = process_chat_event(message)
+    processed_event = process_chat_event(message)#text or location
     if not processed_event:
-        processed_command = process_command(message)
+        is_text = hasattr(message, 'text')
+        if not is_text:
+            #if it's not text it will not be processed for commands or direct message
+            process_no_text_message(message, username)
+            return
+
+        processed_command = process_command(message, username)
         if not processed_command:
+            processed_reply = commands.process_expected_reply(message.chat.id,\
+                                                                message['from']['id'],\
+                                                                username,\
+                                                                message.text)
+            if processed_reply:
+                # Processed as reply, won't continue
+                pending_hide_keyboard = True
+                return 
             (direct_msg, clean_text) = direct_message(message)
             direct_conversation = is_direct_conversation(message)
             if direct_msg:
                 process_chat_message(message, clean_text)
             if not direct_msg or direct_conversation:
-                process_message_trigger(message, clean_text)
+                process_message_trigger(message, clean_text, username)
 
 def process_chat_event(message):
     reply = None
@@ -382,9 +468,24 @@ def process_chat_event(message):
         send_message(message.chat.id, reply)
         return True
     else:
-        return not hasattr(message, 'text')
+        return False
 
-def process_command (message):
+def process_no_text_message(message, username):
+    global pending_hide_keyboard
+    if hasattr(message, 'text'):
+        return False
+    processed = False
+    if hasattr(message, 'location'):
+        processed = commands.process_expected_reply(message.chat.id,\
+                                        message['from']['id'],\
+                                        username,\
+                                        message.location)
+        if processed:
+            pending_hide_keyboard = True
+        
+    return processed
+
+def process_command (message, username):
     (command, bot, argument) = parse_command(message.text)
     if (command == None):
         return False
@@ -400,19 +501,25 @@ def process_command (message):
         #Mostrar tutorial
         send_message(message.chat.id, commands.command_help(command))
         return True
-    username = message['from'].username if hasattr(message['from'], 'username') else None
-    feedback = commands.process_command(command, message.chat.id, username, arguments)
+    feedback = commands.process_command(command, message.chat.id, message['from']['id'] ,username, arguments)
     if not feedback is None:
         send_message(message.chat.id, feedback)
+
     return True
 
-def process_chat_message(message, message_text):
-    reply = chatbot.get_response(message_text).text
-    reply = customize_reply(message, reply) 
-    send_message(message.chat.id,reply)
 
-def process_message_trigger(message, message_text):
-    username = message['from'].username if hasattr(message['from'], 'username') else None
+def process_chat_message(message, message_text):
+
+    try:
+        reply = chatbot.get_response(message_text).text
+        reply = customize_reply(message, reply) 
+        send_message(message.chat.id,reply)
+    except Exception as e:
+        logger.error(str(e))
+        send_message(message.chat.id,'I can\'t chat right now :(')
+
+
+def process_message_trigger(message, message_text, username):
     message_text = message_text.lower()
     for trigger in message_triggers:
         if (len(trigger.responses) == 0):

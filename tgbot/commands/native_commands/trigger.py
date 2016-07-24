@@ -16,7 +16,7 @@ class TriggerCommand(Command):
     def __init__(self, logger, message_sender):
         super().__init__(logger, message_sender)
 
-    def process(self, chat_id, username, arguments):
+    def process(self, chat_id, user_id, username, arguments):
         self.privileges = self.message_sender.get_privileges()
         self.configuration = self.message_sender.get_configuration()
         self.triggers_file = self.configuration.get('Message triggers', 'file_path')

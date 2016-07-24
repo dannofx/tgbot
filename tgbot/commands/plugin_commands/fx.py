@@ -57,7 +57,7 @@ class FXCommand(Command):
     def description(self):
         return 'Currency converter.'
 
-    def process(self, chat_id, username, arguments):
+    def process(self, chat_id, user_id, username, arguments):
         if len(arguments) != 3:
             return self.help()
         else:

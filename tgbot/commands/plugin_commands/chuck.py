@@ -45,7 +45,7 @@ class JokeCommand(Command):
         """   
         return 'Tells a random joke about Chuck Norris.'
 
-    def process(self, chat_id, username, arguments):
+    def process(self, chat_id, user_id, username, arguments):
         """ This method is called when the command is invoked.
 
         Args:

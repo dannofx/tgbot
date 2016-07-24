@@ -27,7 +27,7 @@ class JokeCommand(Command):
     def description(self):
         return 'Gets a joke in Spanish.'
 
-    def process(self, chat_id, username, arguments):
+    def process(self, chat_id, user_id, username, arguments):
         level = 3
         if len(arguments) == 1:
             try:

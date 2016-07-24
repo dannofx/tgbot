@@ -19,7 +19,7 @@ class ScheduleCommand(Command):
         self.scheduler.start()
         ScheduleCommand.schedule_sender = message_sender
 
-    def process(self, chat_id, username, arguments):
+    def process(self, chat_id, user_id, username, arguments):
         if len(arguments) < 1:
             return self.help()
         
