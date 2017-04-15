@@ -215,6 +215,13 @@ def main():
     configuration = config
     logger.info("Configuration file loaded sucessfully")
     
+     # Set new token if necessary
+    if args.authorization_token:
+        config.set('Telegram', 'bot_token', args.authorization_token)
+        with open(config_path, 'w') as configfile:
+            config.write(configfile)
+        logger.info('New authorization token saved.')
+
     # Get Telegram API properties
     create_url.url_format = config.get('Telegram','url_format')
     create_url.bot_token = config.get('Telegram', 'bot_token')
@@ -248,15 +255,8 @@ def main():
         chatbot.set_trainer(ChatterBotCorpusTrainer)
         chatbot.train("chatterbot.corpus.english")
     logger.info("Chatterbot initialized...")
-
-    # Set new token if necessary
-    if args.authorization_token:
-        config.set('Telegram', 'bot_token', args.authorization_token)
-        with open(config_path, 'w') as configfile:
-            config.write(configfile)
-        logger.info('New authorization token saved.')
     logger.info("Bot token: " + create_url.bot_token)
-
+   
     # Load message commands
     sender = TelegramSender()
     commands.load_commands(sender, logger)
