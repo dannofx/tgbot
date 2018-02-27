@@ -1,12 +1,12 @@
 # tgbot #
 
-tgbot is another [Telegram](https://telegram.org/) bot written in Python. It's a multipurpose bot that is able to have a conversation (using [ChatterBot](https://github.com/gunthercox/ChatterBot) library), look for trigger keywords in a conversation and launch an automated responses, manage self configuration from Telegram app, it also includes several commands like commands to tell jokes or schedule messages, besides new customs commands can be added pasting python scripts in the commands folder.
+tgbot is another [Telegram](https://telegram.org/) bot written in Python. It's a multipurpose bot that is able to have a conversation (using [ChatterBot](https://github.com/gunthercox/ChatterBot) library), look for trigger keywords in a conversation and launch automated responses according to them. It also is able to adjust some internal configurations directly from the Telegram app and includes several commands like commands to tell jokes or schedule messages. Custom commands can be added dropping python scripts in the commands folder.
 
 ## Installation
 
 tgbot needs Python 3.4 or newer to work and it has been tested on OS X 10.9+ and several Debian based systems. It could work over Windows but it has not been tested yet.
 
-First of all you need to create a Telegram bot and get a token, if you don't know how to do it, the process is explained [here](https://core.telegram.org/bots#6-botfather).
+First of all, you need to create a Telegram bot and get a token, if you don't know how to do it, the process is explained [here](https://core.telegram.org/bots#6-botfather).
 
 If you want your bot be able to interact with groups don't forget configure privacy settings for your bot in the [@BotFather](https://telegram.me/BotFather)'s conversation (commands `/setjoingroups` and `/setprivacy`).
 
